@@ -28,21 +28,21 @@ VALUES
     
 -- © Copyright 2025 Break Into Tech  --
 
--- Write a SQL query that orders the items by price.
+-- Orders the items by price
 SELECT *
 FROM superstore
 ORDER BY price;
 
--- Write your own SQL query that will show a statistic about the item prices, like a sum, average, minimum, maximum, or count.
+-- The Average price of all the items in the table
 SELECT AVG(price)
 FROM superstore;
 
---Write your own SQL query that will show a statistic about the price for items in the category of "Kitchen Supplies".
+-- The maximum price for items in the category of "Kitchen Supplies".
 SELECT SUM(price), category
 FROM superstore
 WHERE category = 'Kitchen Supplies';
 
--- How many different items do we have in stock in Electronics?
+-- How many different items are stocked in Electronics?
 SELECT COUNT(category), SUM(stock_quantity)
 FROM superstore
 WHERE category = 'Electronics' AND stock_quantity > 0;
