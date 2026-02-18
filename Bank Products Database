@@ -26,6 +26,7 @@ VALUES
 (14, 'Gold Credit Card', 'Credit Card', 20.00, 10.00, 0.00, 'Higher credit limits.'),
 (15, 'Student Credit Card', 'Credit Card', 22.00, 5.00, 0.00, 'Designed for students.')
 ;
+-- © Copyright 2025 Break Into Tech  --
 
 
 -- Display the table for referencing
