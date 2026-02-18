@@ -33,8 +33,8 @@ VALUES
 SELECT *
 FROM bank_products;
 
--- The customer would like to know what kind of accounts your bank offers. Display all the bank product names.
-SELECT product_name
+-- The customer would like to know what kind of accounts your bank offers.
+SELECT product_name, product_type
 FROM bank_products;
 
 -- This customer is interested in opening a Checking or Savings account, but wants more information on the options.
@@ -49,3 +49,19 @@ FROM bank_products
 WHERE product_type = 'Savings'
 AND interest_rate >=.75
 AND monthly_fee = 0;
+
+-- Display the following products: Premium Checking, High Yield Savings, Platinum Credit Card, Gold Credit Card
+SELECT product_name, description
+FROM bank_products
+WHERE product_name IN('Premium Checking', 'High Yield Savings', 'Platinum Credit Card','Gold Credit Card');
+
+-- You know that your bank offers a service for businesses
+SELECT product_name
+FROM bank_products
+WHERE product_name LIKE 'Business%';
+
+-- A new customer wants something with rewards. Show the name and description for all products that have the word “reward” in either the name or description.
+SELECT product_name, description
+FROM bank_products
+WHERE product_name LIKE '%reward%'
+or description LIKE "%reward%";
