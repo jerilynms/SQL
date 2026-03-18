@@ -63,4 +63,49 @@ SELECT orderID
 FROM BIT_DB.MarSales
 WHERE orderID LIKE '16_0%';
 
+-- How many of each type of headphone were sold in February?
+SELECT Product, SUM(Quantity)
+FROM FebSales
+WHERE Product LIKE '%headphone%'
+AND length(orderid) = 6 
+AND orderid <> 'Order ID'
+GROUP BY Product;
+
+-- What was the average amount spent per account in February?
+SELECT AVG(feb.Quantity*feb.price) AS Avg_Spend
+FROM FebSales AS feb
+LEFT JOIN customers AS cust
+ON feb.orderID = cust.order_id
+WHERE length(orderid) = 6 
+AND orderid <> 'Order ID';
+
+-- Find order ids from Georgia (GA) where the order has an average price greater than $1,000 and was placed on or after 04/10. 
+SELECT orderID, location, orderdate, AVG(price)
+FROM AprSales
+WHERE length(orderid) = 6 
+AND orderid <> 'Order ID'
+AND location LIKE '%GA%'
+AND orderdate LIKE '04/1%'
+GROUP BY orderID
+HAVING AVG(price) > 1000;
+
+-- Find all order IDs from May that start with 1943 and end with a 5. Order IDs are only 6 digits.
+SELECT location, orderID
+FROM MaySales
+WHERE orderID LIKE '1943_5'
+AND length(orderid) = 6 
+AND orderid <> 'Order ID' 
+ORDER BY orderID;
+
+-- Which product brought in the most revenue in January and how much revenue did it bring in total?
+SELECT Product, SUM(Quantity) AS Total_Sold, price, SUM(Quantity*price) AS Revenue
+FROM JanSales
+WHERE length(orderid) = 6 
+AND orderid <> 'Order ID'
+GROUP BY Product, price
+ORDER BY Revenue desc
+LIMIT 1;
+
+
+
 
