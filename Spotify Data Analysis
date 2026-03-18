@@ -1,0 +1,67 @@
+# For this project, I downloaded Spotify data.
+# Then I created a table to insert Spotify data into.
+# Finally, I performed analytics on the data using SQL. 
+
+CREATE TABLE BIT_DB.Spotifydata (
+id integer PRIMARY KEY,
+artist_name varchar NOT NULL,
+track_name varchar NOT NULL,
+track_id varchar NOT NULL,
+popularity integer NOT NULL,
+danceability decimal(4,3) NOT NULL,
+energy decimal(4,3) NOT NULL,
+song_key integer NOT NULL,
+loudness decimal(5,3) NOT NULL,
+song_mode integer NOT NULL,
+speechiness decimal(5,4) NOT NULL,
+acousticness decimal(6,5) NOT NULL,
+instrumentalness decimal(8,7) NOT NULL,
+liveness decimal(5,4) NOT NULL,
+valence decimal(4,3) NOT NULL,
+tempo decimal(6,3) NOT NULL,
+duration_ms integer NOT NULL,
+time_signature integer NOT NULL )
+
+#Then I inserted the Spotify Data .csv into the table.
+
+#Next, I explored the data using the following SQL.
+
+-- Display all data for viewing 
+SELECT * FROM Spotifydata;
+
+-- Who are the top 10 artists based on the popularity of their individual track?
+SELECT artist_name, popularity
+FROM Spotifydata
+ORDER BY popularity desc
+LIMIT 10;
+
+-- Do the most popular songs have similar keys?
+SELECT artist_name, track_name, popularity, song_key
+FROM Spotifydata
+ORDER BY popularity desc;
+
+-- What is the average danceability score for each artisit?
+SELECT artist_name, AVG(danceability)
+FROM Spotifydata
+GROUP BY artist_name
+ORDER BY AVG(danceability) DESC;
+
+-- Which songs have a tempo of 100-120 beats per minute, the tempo needed to match CPR compressions?
+SELECT artist_name, track_name, tempo
+FROM Spotifydata
+WHERE tempo BETWEEN 100 AND 120
+ORDER BY tempo asc;
+
+-- Who has the most amount of track time on this list by duration of the track (in minutes) and the number of songs each?
+SELECT artist_name, COUNT(track_name) AS Numb_Of_Songs, SUM(duration_ms/1000/60) AS Song_Minutes 
+FROM Spotifydata
+GROUP BY artist_name
+ORDER BY SUM(duration_ms) DESC
+LIMIT 2;
+
+-- Of the tracks with an average acoustic rating above .4, which artists have the higher average energy ratings?
+SELECT artist_name, AVG(acousticness), AVG(energy)
+FROM Spotifydata
+WHERE acousticness > .4
+GROUP BY artist_name
+ORDER BY AVG(energy) desc;
