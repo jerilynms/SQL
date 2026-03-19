@@ -65,3 +65,21 @@ FROM Spotifydata
 WHERE acousticness > .4
 GROUP BY artist_name
 ORDER BY AVG(energy) desc;
+
+-- Calculate the average popularity for the artists in the Spotify data table. 
+-- Then, for every artist with an average popularity of 90 or above, 
+-- show their name, their average popularity, and label them as a “Top Star”.
+
+WITH popularity_avg_CTE AS 
+(SELECT artist_name AS Artist, AVG(popularity) AS AvgPopularity
+FROM Spotifydata
+GROUP BY artist_name )
+
+SELECT Artist, AvgPopularity,
+CASE WHEN AvgPopularity >= 90 THEN 'Top Star'
+ELSE ''
+END AS Achievement 
+FROM popularity_avg_CTE 
+ORDER BY AvgPopularity desc;
+
+
