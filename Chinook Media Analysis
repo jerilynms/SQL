@@ -1,0 +1,185 @@
+# In this SQL, I'm querying a database with multiple tables in it to quantify statistics about customer and media data
+# The tables include data on employees, customers, invoices, tracks, genres, albums, artists, media types, and playlists
+
+-- Show Customers who are not in the US
+SELECT CustomerId, FirstName, LastName, Country
+FROM chinook.customers
+WHERE Country <> 'USA'
+ORDER BY Country asc;
+
+-- Show only the Customers from Brazil
+SELECT CustomerId, FirstName, LastName
+FROM chinook.customers
+WHERE Country = 'Brazil';
+
+-- Find the Invoices of customers who are from Brazil
+SELECT c.FirstName, c.LastName, i.InvoiceId, i.InvoiceDate, i.BillingCountry
+FROM chinook.invoices i
+LEFT JOIN chinook.customers c
+ON i.CustomerId = c.CustomerId
+WHERE c.Country = 'Brazil'
+ORDER BY c.LastName;
+
+-- Show the Employees who are Sales Agents
+SELECT EmployeeId, FirstName, LastName, Title
+FROM chinook.employees
+WHERE Title Like '%Sales%Agent%';
+
+-- Show who each employee reports to
+SELECT e.FirstName EmployeeFirst, e.LastName EmployeeLast, e.Title, r.FirstName SupervisorFirst,
+r.LastName SupervisorLast, r.Title SupervisorTitle
+FROM employees e
+LEFT JOIN employees r
+ON e.ReportsTo = r.EmployeeId
+ORDER BY SupervisorTitle asc;
+
+-- For each Sales Agent, how many countries of customers do they support?
+SELECT e.FirstName, e.LastName, COUNT(distinct c.country) AS NumOfCountries
+FROM chinook.employees e
+JOIN chinook.customers c
+ON e.EmployeeId = c.SupportRepId
+GROUP BY c.SupportRepId
+ORDER BY NumOfCountries desc;
+
+-- Find a unique/distinct list of billing countries from the Invoice table
+SELECT DISTINCT BillingCountry
+FROM chinook.invoices;
+
+-- How many tracks have each customer purchased and for how much?
+SELECT c.CustomerID, c.FirstName, c.LastName, SUM(inv.Total) AS TotalSpent, SUM(items.Quantity) AS NumOfTracks 
+FROM chinook.customers c
+LEFT JOIN chinook.invoices inv
+ON c.CustomerId = inv.CustomerId
+JOIN chinook.invoice_items items
+ON inv.InvoiceId = items.InvoiceId
+GROUP BY c.CustomerID 
+ORDER BY TotalSpent desc;
+
+-- Shows the invoices associated with each sales agent 
+SELECT i.InvoiceId, i.InvoiceDate, i.Total, e.FirstName SalesFirstName, e.LastName SalesLastName
+FROM invoices i
+LEFT JOIN customers c
+ON i.CustomerId = c.CustomerId
+LEFT JOIN employees e
+ON c.SupportRepId = e.EmployeeId
+ORDER BY e.LastName;
+
+-- Show the Invoice Total, Customer name, Country, and Sales Agent name for all invoices and customers
+SELECT i.InvoiceId, i.Total, c.FirstName CustomerFirstName, c.LastName CustomerLastName, c.Country,
+e.FirstName SalesFirstName, e.LastName SalesLastName
+FROM invoices i
+RIGHT JOIN customers c
+ON i.CustomerId = c.CustomerId
+LEFT JOIN employees e
+ON c.SupportRepId = e.EmployeeId
+ORDER BY c.LastName;
+
+-- Show the total sales made by each sales agent
+SELECT e.FirstName AgentFirstName, e.LastName AgentLastName, SUM(i.Total) TotalSales
+FROM invoices i
+LEFT JOIN customers c
+ON i.CustomerId = c.CustomerId
+LEFT JOIN employees e
+ON c.SupportRepId = e.EmployeeId
+GROUP BY e.LastName
+ORDER BY TotalSales desc;
+
+-- How many Invoices were there in 2009
+SELECT COUNT(InvoiceId)
+FROM invoices
+WHERE InvoiceDate LIKE '2009%';
+
+-- What are the total sales for 2009?
+SELECT SUM(Total)
+FROM invoices
+WHERE InvoiceDate LIKE '2009%';
+
+-- Which sales agent made the most dollars in sales in 2009
+SELECT e.FirstName AgentFirstName, e.LastName AgentLastName, SUM(i.Total) TotalSales
+FROM invoices i
+LEFT JOIN customers c
+ON i.CustomerId = c.CustomerId
+LEFT JOIN employees e
+ON c.SupportRepId = e.EmployeeId
+WHERE InvoiceDate LIKE '2009%'
+GROUP BY e.LastName
+ORDER BY TotalSales desc
+LIMIT 1;
+
+-- Display the purchased track name with each invoice line ID
+SELECT i.InvoiceLineId, t.Name
+FROM invoice_items i
+LEFT JOIN tracks t
+ON i.TrackId = t.TrackId
+ORDER BY i.InvoiceLineId;
+
+-- Show the purchased track name and artist name with each invoice line ID
+SELECT i.InvoiceLineId, t.Name TrackName, art.Name ArtistName
+FROM invoice_items i
+LEFT JOIN tracks t
+ON i.TrackId = t.TrackId
+JOIN albums alb
+ON t.AlbumId = alb.AlbumId
+JOIN artists art
+ON alb.ArtistId = art.ArtistId
+ORDER BY i.InvoiceLineId;
+
+-- Show all the Tracks, and include the Album name, Media type, and Genre
+SELECT t.Name TrackName, a.Title AlbumTitle, g.Name Genre, m.Name MediaType
+FROM tracks t
+LEFT JOIN albums a
+ON t.AlbumId = a.AlbumId
+LEFT JOIN media_types m
+ON t.MediaTypeId = m.MediaTypeId
+LEFT JOIN genres g
+ON t.GenreId = g.GenreId
+ORDER BY AlbumTitle;
+
+-- If a track is on a playlist, how many playlists is it on and which tracks are on the most playlists?
+SELECT t.TrackId, t.Name, COUNT(p.PlaylistId) AS NumOfPlaylists
+FROM tracks AS t
+LEFT JOIN playlist_track AS p
+ON t.TrackId = p.TrackId
+GROUP BY t.TrackID
+ORDER BY NumOfPlaylists desc;
+
+
+-- What is the longest track and show the genre, album title, artist name, and playlists that it's on
+WITH LongestTrack AS (
+SELECT * FROM tracks
+ORDER BY Milliseconds DESC 
+LIMIT 1)
+
+SELECT t.Name TrackName, al.Title AlbumTitle, art.Name Artist, g.Name GenreName, p.Name PlaylistName, p.PlaylistId
+FROM LongestTrack t
+JOIN albums al
+ON t.AlbumId = al.AlbumId
+JOIN artists art
+ON al.ArtistId = art.ArtistId
+JOIN genres g
+ON t.GenreId = g.GenreId
+JOIN playlist_track pt
+ON t.TrackId = pt.TrackId
+JOIN playlists p
+ON pt.PlaylistId = p.PlaylistId;
+
+-- HWhich genres have more than 100 tracks?
+SELECT g.Name Genre, COUNT(t.TrackId) as NumberOfTracks
+FROM tracks t
+LEFT JOIN genres g
+ON t.GenreId = g.GenreID
+GROUP BY g.Name
+HAVING NumberOfTracks > 100
+ORDER BY NumberOfTracks desc;
+
+-- Label playlists with more than 100 tracks as long, 25-100 tracks as medium, and less than 50 as short
+SELECT p.PlaylistId, p.Name, COUNT(pt.TrackId) NumberOfTracks,
+CASE WHEN COUNT(pt.TrackId) >= 100 THEN 'Long'
+    WHEN COUNT(pt.TrackId) >= 25 THEN 'Medium'
+    ELSE 'Short'
+    END AS PlaylistSize
+FROM playlists p
+LEFT JOIN playlist_track pt
+ON p.PlaylistId = pt.PlaylistId
+GROUP BY p.PlaylistId
+ORDER BY NumberofTracks desc;
