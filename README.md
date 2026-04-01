@@ -4,6 +4,7 @@ Welcome to my SQL portfolio! This code repository contains examples of SQL I've 
 
 The examples progress in complexity as I learned more SQL. To assist with your viewing, I have provided a list of most to least complex projects, with the skills used. 
 
+- Chinook Media Analysis: Analytics using SQLite
 - Spotify Data Analysis: Data Filtering using SQLite, CTE/Temporary Tables
 - Customer & Order Analytics: Advanced Filtering using SQLite
 - Climate Conference Analysis: INNER/LEFT JOIN, SELF JOIN, Multiple Joins, Subqueries
