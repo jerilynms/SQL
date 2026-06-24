@@ -5,13 +5,15 @@
 # Of the 25 hotels, all are 5 star accommodations and located in a distinct city and country.
 # The reviews are dated from 2020 to 2025. 
 
+# To begin, I was interested in the best and worst rated hotels and what kind of scores they recieved. 
 # The Golden Oasis in Dubai (2020-2023) and Canal House Grand in Amsterdam (2024-2025) are the best rated hotels. 
 # The Savannah House in Lagos is consistently the lowest rated. 
 
 # The Golden Oasis scored on average higher than Canal House Grand on comfort, facilities, and staff while 
 # Canal House Grand beat them on cleanliness, location, and value for money. 
 
-# User demographic insights for these three hotels: 
+# Next, I questioned what kind of user leaves higher reviews for these three hotels so that hotels could target
+# certain demographics if they wished to increase their scores. 
 # It seems that more men leave reviews but women tend to give a slightly higher score
 # For all three hotels, the age groups that leave the most reviews are 25-34 and 35-44. For The Golden Oasis and
 # Canal House Grand, the higher reviews are left by the younger age groups (under 44). 
